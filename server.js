@@ -9,10 +9,15 @@ dotenv.config(); // Load .env file
 // --- CONFIGURATION ---
 const app = express();
 
-// Allow all origins for easier hosting (you can restrict this later)
+// ✅ FIX: Explicitly allow your Vercel frontend and Localhost
+// This fixes the "CORS policy: No 'Access-Control-Allow-Origin' header" error
 app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST']
+  origin: [
+    "http://localhost:5173",                 // Local development
+    "https://eback-one.vercel.app"           // Your specific Vercel URL
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"], 
+  credentials: true                          // Required for auth headers to pass
 }));
 
 app.use(express.json());
