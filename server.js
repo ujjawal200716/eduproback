@@ -5,7 +5,11 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
 dotenv.config(); // Load .env file
-
+// ✅ HEALTH CHECK ROUTE
+// This tells the server what to do when your frontend "pings" it.
+app.get('/', (req, res) => {
+  res.send('Backend is Active! 🚀');
+});
 // --- CONFIGURATION ---
 const app = express();
 
