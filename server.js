@@ -8,15 +8,15 @@ dotenv.config(); // Load .env file
 
 const app = express();
 
+// --- 1. CONFIGURATION & CORS ---
 // ✅ FIX: Explicitly allow your Vercel frontend and Localhost
-// This fixes the "CORS policy: No 'Access-Control-Allow-Origin' header" error
 app.use(cors({
   origin: [
-    "http://localhost:5173",                 // Local development
-    "https://eback-one.vercel.app"           // Your specific Vercel URL
+    "http://localhost:5173",             // Local development
+    "https://eback-one.vercel.app"       // Your Vercel Frontend
   ],
   methods: ["GET", "POST", "PUT", "DELETE"], 
-  credentials: true                          // Required for auth headers to pass
+  credentials: true                      // Required for auth headers
 }));
 
 app.use(express.json());
@@ -96,7 +96,13 @@ const requireAuth = async (req, res, next) => {
 
 // --- 5. ROUTES ---
 
-// Notes
+// ✅ NEW: HEALTH CHECK ROUTE (Required for Render Keep-Alive)
+// This fixes the "404 Not Found" error when waking up the server
+app.get('/', (req, res) => {
+  res.send('Backend is Active! 🚀');
+});
+
+// Notes Routes
 app.post('/api/notes', requireAuth, async (req, res) => {
   try {
     const { title, smart_notes, mcq_json, pages } = req.body;
@@ -120,7 +126,7 @@ app.get('/api/notes', requireAuth, async (req, res) => {
   }
 });
 
-// Career
+// Career Routes
 app.post('/api/career', requireAuth, async (req, res) => {
   try {
     const { role, report_html } = req.body;
@@ -143,6 +149,7 @@ app.get('/api/career', requireAuth, async (req, res) => {
   }
 });
 
+// --- 6. START SERVER ---
 // ✅ Dynamic Port for Hosting (Render assigns a port automatically)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT} | Bypass Mode: ${BYPASS_AUTH}`));
