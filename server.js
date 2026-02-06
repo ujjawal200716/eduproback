@@ -13,7 +13,7 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",             // Local development
-    "https://eback-one.vercel.app"       // Your Vercel Frontend
+    "eback-ujjawal200716s-projects.vercel.app"       // Your Vercel Frontend
   ],
   methods: ["GET", "POST", "PUT", "DELETE"], 
   credentials: true                      // Required for auth headers
