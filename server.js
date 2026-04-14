@@ -8,19 +8,7 @@ dotenv.config(); // Load .env file
 
 const app = express();
 
-// --- 1. CONFIGURATION & CORS ---
-// ✅ FIX: Explicitly allow your Vercel frontend and Localhost
-app.use(cors({
-  origin: [
-    "http://localhost:5173",             // Local development
-    "https://eback-ujjawal200716s-projects.vercel.app"    
-    "eback-one.vercel.app"// Your Vercel Frontend
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"], 
-  credentials: true                      // Required for auth headers
-}));
 
-app.use(express.json());
 
 // ⚡ AUTH SETTINGS
 // Control this via your .env file (set BYPASS_AUTH=true to skip checks)
