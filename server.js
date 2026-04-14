@@ -8,7 +8,11 @@ dotenv.config(); // Load .env file
 
 const app = express();
 
-
+// --- 1. ESSENTIAL MIDDLEWARES (Added) ---
+// Enable CORS so your frontend can communicate with this API
+app.use(cors()); 
+// Parse incoming JSON payloads so req.body works in POST requests
+app.use(express.json()); 
 
 // ⚡ AUTH SETTINGS
 // Control this via your .env file (set BYPASS_AUTH=true to skip checks)
@@ -22,6 +26,7 @@ const MONGO_URI = process.env.MONGO_URI;
 // Check if keys are loaded
 if (!SUPABASE_URL || !SUPABASE_KEY || !MONGO_URI) {
   console.error("❌ CRITICAL ERROR: Missing environment variables. Check your .env file or host settings.");
+  // Optional: process.exit(1); to stop the server if it can't run without these
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -62,8 +67,12 @@ const requireAuth = async (req, res, next) => {
 
   // 2. NORMAL MODE
   try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'No token provided or invalid format' });
+    }
+    
+    const token = authHeader.split(' ')[1];
 
     // 5-second timeout safeguard
     const { data, error } = await Promise.race([
@@ -85,7 +94,7 @@ const requireAuth = async (req, res, next) => {
 
 // --- 5. ROUTES ---
 
-// ✅ NEW: HEALTH CHECK ROUTE (Required for Render Keep-Alive)
+// ✅ HEALTH CHECK ROUTE (Required for Render Keep-Alive)
 // This fixes the "404 Not Found" error when waking up the server
 app.get('/', (req, res) => {
   res.send('Backend is Active! 🚀');
